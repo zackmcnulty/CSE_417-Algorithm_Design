@@ -1,9 +1,19 @@
+# Zachary McNulty (zmcnulty, ID: 1636402)
+
+# FINDING BICONNECTED COMPONENTS 
+
+
 # Reads input files of the form:
+
 # the input will consist of an odd number of whitespace-separated integers.
 # The first must be a positive integer “N”; this is followed by some
 # number of pairs of integers in the range 0 to N − 1. “N ” represents the 
 # number of vertices in the graph, and each pair u, v represents an edge
 # between vertices u and v.
+
+
+# Can be run from the command line using:
+# python3  hw2.py inpute_file_name.txt 
 
 import time
 import sys
@@ -96,7 +106,7 @@ dfscounter = 1
 edgeList = []
 biconnected_components = []
 articulation_points = set([])
-start_vertex = 0
+start_vertex = 5 
 visited = [start_vertex]
 
 # parent = -1 because the root has no parent 
@@ -114,7 +124,7 @@ articulation_points.remove(start_vertex)
 # check separately whether start vertex is articulation point
 for bc in biconnected_components:
     for edge in bc:
-        if 0 in edge:
+        if start_vertex in edge:
             count += 1
             break
 
