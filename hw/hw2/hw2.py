@@ -70,7 +70,7 @@ results = open(output_filename, 'w')
 input_data = f.split()
 N = int(input_data[0])
 
-print("input file read in: ", time.time() - start_input)
+#print("input file read in: ", time.time() - start_input)
 
 
 # Generating Adjacency List ====================================================
@@ -87,7 +87,7 @@ for e in edges:
     adjacency_list[u].append(v)
     adjacency_list[v].append(u)
 
-print("adjacency list generated in: ", time.time() - start_adj)
+#print("adjacency list generated in: ", time.time() - start_adj)
 
 
 # Finding Biconnected Components ==============================================
@@ -137,6 +137,8 @@ if count > 1:
 alg_runtime = time.time() - start_alg
 
 # Outputting Results ==========================================================
+
+# for more detailed outputs
 results.write("number nodes: " + str(N) + "\n")
 print("number nodes: " + str(N) + "\n")
 results.write("number edges: " + str(len(list(edges))) + "\n")
@@ -154,3 +156,7 @@ for i, bc in enumerate(biconnected_components):
 
 results.write("biconnected algorithm ran in: " + str(alg_runtime)+ "\n")
 print("algorithm ran in ", alg_runtime)
+
+
+# For timing trials
+#print(" ", N, " ", len(list(edges)), " ", alg_runtime)

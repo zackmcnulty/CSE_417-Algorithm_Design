@@ -1,3 +1,5 @@
+# Zachary McNulty (zmcnulty, ID: 1636402)
+
 number nodes: 16
 number edges: 24
 number biconnected components: 7
