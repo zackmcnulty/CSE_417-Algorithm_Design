@@ -13,7 +13,7 @@
 
 
 # Can be run from the command line using:
-# python3  hw2.py inpute_file_name.txt 
+# python3  hw2.py inpute_file_name.txt start_vertex(optional)
 
 import time
 import sys
@@ -106,8 +106,11 @@ dfscounter = 1
 edgeList = []
 biconnected_components = []
 articulation_points = set([])
-start_vertex = 5 
-visited = [start_vertex]
+try:
+    start_vertex = int(sys.argv[2])
+except:
+    start_vertex = 0 
+
 
 # parent = -1 because the root has no parent 
 # NOTE: this algorithm does NOT tell us whether the start_vertex is an articulation point or

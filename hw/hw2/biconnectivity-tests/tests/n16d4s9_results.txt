@@ -1,0 +1,12 @@
+number nodes: 16
+number edges: 38
+number biconnected components: 6
+number of articulation points: 4
+articulation points: {0, 11, 3, 4}
+biconnected component 1: [(14, 8), (14, 6), (14, 4), (14, 2), (12, 14), (12, 6), (12, 4), (12, 2), (8, 12), (8, 4), (8, 2), (6, 8), (6, 4), (2, 6), (4, 2)]
+biconnected component 2: [(0, 4)]
+biconnected component 3: [(15, 9), (15, 7), (15, 3), (15, 1), (10, 15), (10, 9), (10, 5), (10, 3), (10, 1), (7, 10), (7, 3), (7, 1), (9, 7), (9, 3), (9, 1), (5, 9), (5, 3), (1, 5), (3, 1)]
+biconnected component 4: [(11, 3)]
+biconnected component 5: [(11, 13)]
+biconnected component 6: [(0, 11)]
+biconnected algorithm ran in: 0.00017213821411132812
