@@ -25,8 +25,17 @@
 
 ##### Lect 5: greedy algorithms 2
 
+- Techniques for proving correctness of Greedy algorithms
 - Interval Partitioning & Interval Conflict Graphs
 - Scheduling to Minimize Lateness
+- Shortest Path: Dijsktras algorithm
+
+##### Lect 6: Huffman Codes / Data Compression
+- Huffman Algorithm and Proof of correctness
+
+
+##### Lect 7: Divide and Conquer
+
 
 ### Homework Topics
 
@@ -40,5 +49,6 @@
 
 ##### HW3
 - Analysis of Interval Partitioning Algorithms
+- Proofs and Counterexamples of Greedy algorithms
 - Huffman Tree Algorithm
 
