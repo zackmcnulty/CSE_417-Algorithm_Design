@@ -10,6 +10,8 @@ import itertools
 import math
 import time
 
+from collections import deque
+
 try:
     input_file = sys.argv[1]
 except:
@@ -56,8 +58,7 @@ if run_naive:
 
 start_alg = time.time()
 
-# assumes that points is sorted by x coordinate
-# or should I save that for the O(n log n) algorithm?)
+# Does not assume that the points are sorted in any way
 def closest_pair(points):
 
     n = len(points)
@@ -102,34 +103,39 @@ print("2: ", min_dist, " ", runtime_alg)
 start_improved_alg = time.time()
 
 # sort x FIRST before calling algorithm
+# deque is a special data structure with fast appends/pops from either
+# front or back
 def closest_pair_helper(points):
 
     n = len(points)
     if n <= 1: return [float("inf"), points]
 
     L = (points[n//2 - 1][0] + points[n//2][0] ) / 2
-    [delta1, y_sorted1] = closest_pair(points[:n//2])
-    [delta2, y_sorted2] = closest_pair(points[n//2:])
+    [delta1, y_sorted1] = closest_pair_helper(points[:n//2])
+    [delta2, y_sorted2] = closest_pair_helper(points[n//2:])
     delta = min(delta1, delta2)
 
     y_sorted = []
 
     # merge the sorted sublists that are sorted by y
-    while len(y_sorted1) > 0 and len(y_sorted2) > 0:
-        if y_sorted1[0] <= y_sorted2[0]:
-            y_sorted.append(y_sorted1.pop(0))
+    ind1 = 0
+    ind2 = 0
+    while ind1 < len(y_sorted1) and ind2 < len(y_sorted2):
+        if y_sorted1[ind1] <= y_sorted2[ind2]:
+            y_sorted.append(y_sorted1[ind1])
+            ind1 += 1
         else:
-            y_sorted.append(y_sorted2.pop(0))
+            y_sorted.append(y_sorted2[ind2])
+            ind2 += 1
 
-    if len(y_sorted1) == 0:
-        y_sorted.extend(y_sorted2)
-    else:
-        y_sorted.extend(y_sorted1)
+    if len(y_sorted2) > ind2:
+        y_sorted.extend(y_sorted2[ind2:])
+    elif len(y_sorted2) > ind1:
+        y_sorted.extend(y_sorted1[ind1:])
     
     
     # filter out points whose x values place them too far from L
-    filtered = list(filter(lambda point: abs(L - points[0]) <= delta, y_sorted))
-    
+    filtered = list(filter(lambda point: abs(L - point[0]) <= delta, y_sorted))
     m = len(filtered)
 
     for i in range(len(filtered)):
@@ -148,7 +154,7 @@ def closest_pair2(points):
 
 
 # sort by x coordinate before making function call
-min_dist = closest_pair(points)
+min_dist2 = closest_pair2(points)
 runtime_improved_alg = time.time() - start_improved_alg
 
-print("3: ", min_dist, " ", runtime_improved_alg) 
+print("3: ", min_dist2, " ", runtime_improved_alg) 
