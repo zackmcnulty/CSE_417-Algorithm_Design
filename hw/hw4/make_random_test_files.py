@@ -34,8 +34,14 @@ for i in range(tests):
     points = zip(np.random.uniform(low= -x_range, high=x_range, size=num_points), np.random.uniform(low= -y_range, high=y_range, size=num_points))
     for p in points:
         f.write(str(p[0]) + " " + str(p[1]) + " ")
+    f.close()
+    
 
-
+    # edge case: straight line of opens
+    f = open(filename + "LINE" + str(num_points) + ".txt", 'w')
+    for i in range(num_points):
+        f.write("0 " + str(i) + " ")
+    f.close()
 
 
 
