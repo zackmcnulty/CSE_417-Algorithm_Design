@@ -86,7 +86,6 @@ def closest_pair(points):
 
     # find points within delta of L
     # too slow? use the fact that its sorted by x to elim some comparisions?
-#    mid_points = list(filter(lambda point: abs(L - point[0]) <= delta, x_sorted))
 
     mid_points = []
     index = 0
@@ -95,6 +94,8 @@ def closest_pair(points):
     while index < n and abs(L - x_sorted[index][0]) <= delta:
             mid_points.append(x_sorted[index])
             index += 1
+
+#    mid_points = list(filter(lambda point: abs(L - point[0]) <= delta, x_sorted))
 
     # sort remaining points by y coordinate
     y_sorted = sorted(mid_points, key= (lambda point: point[1]))
