@@ -35,6 +35,8 @@
 
 
 ##### Lect 7: Divide and Conquer
+- Merge Sort review
+- Closest Pair of Points algorithm
 
 
 ### Homework Topics
@@ -51,4 +53,7 @@
 - Analysis of Interval Partitioning Algorithms
 - Proofs and Counterexamples of Greedy algorithms
 - Huffman Tree Algorithm
+
+##### HW4
+- Closest Point Algorithm
 
