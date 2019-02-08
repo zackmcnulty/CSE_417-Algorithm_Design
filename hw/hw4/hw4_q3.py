@@ -14,6 +14,8 @@
 # makes it impossible to sort after filtering because we need to return the full
 # sorted list by y values to the parent problem in every recursive call.
 
+# Usage: python3 hw4_p3.py path/to/inputfile.txt
+
 import sys
 import itertools
 import math
@@ -29,9 +31,12 @@ except:
 #input_file = "test_files/test0000_1549077011.2610948_U10.txt"
 
 f = open(input_file).read()
+output = open(input_file[:-4] + "_OUT.txt", 'w')
+#output = open("output_unitsquare.txt", 'a') #append to existing file
 
 file_string = f.split()
 points = list(zip([float(x) for x in file_string[::2]] ,[float(y) for y in file_string[1::2]]))
+N = len(points)
 
 # returns square of the distance between two points p1 = (x,y), p2 = (x2, y2)
 def dist(p1, p2):
@@ -41,7 +46,7 @@ def dist(p1, p2):
 # Naive algorithm: simply brute force all n choose 2 distances.
 
 # used for testing less slow algs on higher n values
-run_naive = False
+run_naive = True
 
 if run_naive:
     start_naive = time.time()
@@ -49,18 +54,24 @@ if run_naive:
     min_dist = float("inf")
     min_pair = None
 
-    for i,p1 in enumerate(points):
-        for p2 in points[i+1:]:
-            next_dist = dist(p1,p2)
-            if next_dist < min_dist:
-                min_dist = next_dist
-                min_pair = [p1, p2]
+    if N == 1:
+        min_pair = points + [None]
+    else:
+
+        for i,p1 in enumerate(points):
+            for p2 in points[i+1:]:
+                next_dist = dist(p1,p2)
+                if next_dist < min_dist:
+                    min_dist = next_dist
+                    min_pair = [p1, p2]
+
 
 
     runtime_naive = time.time() - start_naive
 #    print("1: ", min_pair, " ", min_dist, " ", runtime_naive)
-    print("1: ", min_dist, " ", runtime_naive)
+    print("Version 1 (n = ", N ,"): ", "min pair = ", min_pair, "min dist =",  min_dist, " runtime:", runtime_naive, " seconds")
 
+    output.write("1, " + str(N)  + ", " + str(min_pair)  + ", " + str(min_dist) + " ," + str(runtime_naive) + "\n")
 
 
 #=============================================================
@@ -71,7 +82,7 @@ if run_naive:
 def closest_pair(points):
 
     n = len(points)
-    if n <= 1: return float("inf")
+    if n <= 1: return [float("inf"), [points[0], None]]
     
     # sort by x coordinate
     x_sorted = sorted(points, key=(lambda point: point[0]))
@@ -80,9 +91,15 @@ def closest_pair(points):
     # just choose the x coordinate of L to be in-between the
     # middle two points (when sorted by x coordinate)
     L = (x_sorted[n//2 - 1][0] + x_sorted[n//2][0] ) / 2
-    delta1 = closest_pair(x_sorted[:n//2])
-    delta2 = closest_pair(x_sorted[n//2:])
-    delta = min(delta1, delta2)
+    [delta1, pair1] = closest_pair(x_sorted[:n//2])
+    [delta2, pair2] = closest_pair(x_sorted[n//2:])
+
+    if delta1 < delta2:
+        delta = delta1
+        min_pair = pair1
+    else:
+        delta = delta2
+        min_pair = pair2
 
     # find points within delta of L
     # too slow? use the fact that its sorted by x to elim some comparisions?
@@ -104,19 +121,22 @@ def closest_pair(points):
     for i in range(m):
         k = 1
         while i+k < m and y_sorted[i+k][1] < y_sorted[i][1] + delta:
-            delta = min(delta, dist(y_sorted[i+k], y_sorted[i] ))
+            distance = dist(y_sorted[i+k], y_sorted[i]) 
+            if distance < delta:
+                delta = distance
+                min_pair = [y_sorted[i], y_sorted[i+k]]
+
             k += 1
 
-    return delta
+    return [delta, min_pair]
 
 start_alg = time.time()
 
-min_dist = closest_pair(points)
+[min_dist, min_pair] = closest_pair(points)
 runtime_alg = time.time() - start_alg
 
-print("2: ", min_dist, " ", runtime_alg) 
-
-
+print("Version 2 (n = ", N, "): ", " min pair = ", min_pair, " min dist =",  min_dist, " runtime:", runtime_alg, " seconds")
+output.write("2, " + str(N)  + ", " + str(min_pair)  + ", " + str(min_dist) + " ," + str(runtime_alg) + "\n")
 #====================================================================
 # O(n log n) algorithm described in lecture
 
@@ -125,13 +145,18 @@ print("2: ", min_dist, " ", runtime_alg)
 def closest_pair_helper2(x_sorted):
 
     n = len(x_sorted)
-    if n <= 1: return [float("inf"), x_sorted]
+    if n <= 1: return [float("inf"), x_sorted, [x_sorted[0], None]]
 
     L = (x_sorted[n//2 - 1][0] + x_sorted[n//2][0] ) / 2
-    [delta1, y_sorted1] = closest_pair_helper2(x_sorted[:n//2])
-    [delta2, y_sorted2] = closest_pair_helper2(x_sorted[n//2:])
-    delta = min(delta1, delta2)
+    [delta1, y_sorted1, pair1] = closest_pair_helper2(x_sorted[:n//2])
+    [delta2, y_sorted2, pair2] = closest_pair_helper2(x_sorted[n//2:])
 
+    if delta1 < delta2:
+        delta = delta1
+        min_pair = pair1
+    else:
+        delta = delta2
+        min_pair = pair2
 
     # Have to sort entire list rather than just filtered part?
     y_sorted = []
@@ -161,32 +186,36 @@ def closest_pair_helper2(x_sorted):
     for i in range(m):
         k = 1
         while i+k < m and filtered[i+k][1] < filtered[i][1] + delta:
-            delta = min(delta, dist(filtered[i+k], filtered[i] ))
+            distance = dist(filtered[i+k], filtered[i])
+            if distance < delta:
+                delta = distance
+                min_pair = [filtered[i+k], filtered[i]]
+
             k += 1
 
-    return [delta, y_sorted]
+    return [delta, y_sorted, min_pair]
 
 def closest_pair2(points):
     # sort by x coordinate globally
     x_sorted = sorted(points, key= (lambda point: point[0]))
     result = closest_pair_helper2(x_sorted)
-    return result[0]
+    return [result[0], result[2]]
 
 
 
 start_improved_alg = time.time()
 
 # sort by x coordinate before making function call
-min_dist2 = closest_pair2(points)
+[min_dist, min_pair] = closest_pair2(points)
 runtime_improved_alg = time.time() - start_improved_alg
 
-print("3: ", min_dist2, " ", runtime_improved_alg) 
-
+print("Version 3 (n = ", N, "): ", " min pair = ", min_pair, " min dist =",  min_dist, " runtime:", runtime_improved_alg, " seconds")
+output.write("3, " + str(N)  + ", " + str(min_pair)  + ", " + str(min_dist) + " ," + str(runtime_improved_alg) + "\n")
 
 # =====================================================================
 
 # O(n log n) algorithm described ins section 5.4 of the textbook
-
+'''
 
 
 def closest_pair3(points):
@@ -274,3 +303,4 @@ min_dist3 = closest_pair3(points)[1]
 runtime_improved_alg3 = time.time() - start_improved_alg3
 
 print("3: ", min_dist3, " ", runtime_improved_alg3) 
+'''

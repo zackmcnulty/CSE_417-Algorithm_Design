@@ -1,7 +1,7 @@
 if ! test -z $1
 then 
 rm test_files/*
-python3 make_random_test_files.py $1 $2 $3 $4
+python3 make_random_test_files.py $1 $2 $3 $4 $5 $6
 fi
 
 for fn in $(ls test_files/);
