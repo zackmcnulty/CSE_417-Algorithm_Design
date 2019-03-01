@@ -9,24 +9,7 @@ RUN_RANDOM_TEST_CASES = False
 import numpy as np
 import time
 
-next_seq = input("Next sequence (Q to quit): ")
-while 'Q' not in next_seq:
-    print(next_seq)
 
-    start = time.time()
-    [pairings, OPT] = Nussinov(seq)
-    
-    runtime = time.time() - start
-    n = len(seq)
-    num_pairs = pairings.count(')')
-
-    print(pairings)
-    print("Length = ", n, ", Pairs = ", num_pairs, " Time = ", runtime, " sec")
-    
-    if n < 25:
-        print_opt(OPT)
-
-    print("")
 
 def Nussinov(seq):
     '''
@@ -63,7 +46,7 @@ def Nussinov(seq):
             OPT[i,j] = max(no_pair, pair_at_tj)
     
     # NOTE: run traceback algorithm and set pairs[t] = '(' and pairs[j] = ')' when necessary
-    pairings = traceback(OPT, n, n)
+    pairings = traceback(OPT, 0, n-1)
     return [pairings, OPT]
 
 
@@ -91,3 +74,29 @@ def traceback(OPT, i, j):
             if OPT[i, j] == 1 + OPT[i, t-1] + OPT[t + 1, j-1]:
                 return traceback(OPT, i, t-1) + "(" + traceback(OPT,t+1, j-1) + ")"
 
+
+# =============================================
+
+# NOTE MAIN PROGRAM
+
+next_seq =input("Next sequence (Q to quit): ").upper()
+while 'Q' not in next_seq:
+    
+    print(next_seq)
+
+    start = time.time()
+    [pairings, OPT] = Nussinov(next_seq)
+    
+    runtime = time.time() - start
+    n = len(next_seq)
+    num_pairs = pairings.count(')')
+
+    print(pairings)
+    print("Length = ", n, ", Pairs = ", num_pairs, ", Time = ", runtime, " sec")
+    
+    if n < 25:
+        print_opt(OPT)
+
+    print("")
+
+    next_seq = input("Next sequence (Q to quit): ").upper()
