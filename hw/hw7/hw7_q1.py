@@ -3,15 +3,37 @@ Zachary McNulty
 zmcnulty (1636402)
 
 hw7_q1.py
+
+OPT table Conventions
+
+Entry (i,j) in the OPT table corresponds to the optimal number of pairs
+in the sequence starting at base i and ending at base j. When 
+printing out the OPT table to standard input, I follow the convention
+found in the slides where each i value corresponds to a row with i = 0
+at the top and i = n-1 at the bottom. Similarly, each j value
+corresponds to a column with j = 0 at the far left and j = n-1
+at the far right. This places the optimal value of the full
+sequence in the upper right corner of the OPT table.
+
+
+
 '''
-RUN_RANDOM_TEST_CASES = False
+# run random test cases or not
+# must be False to run tests from standard in
+RUN_RANDOM_TEST_CASES = True
+
+# number of test cases of each size to run
+NUM_TRIALS = 3
+
+# sizes of test cases to run
+TEST_SIZES = list(range(1020, 2020, 20))
 
 import numpy as np
 import time
 
 
 
-def Nussinov(seq):
+def Nussinov(seq, output=True):
     '''
     Returns one of the optimal secondary structures for the given RNA sequence
     (following the assumptions of the Nussinov Algorithm; note this may not
@@ -27,8 +49,11 @@ def Nussinov(seq):
     GCCCACCUUCGAAAAGACUGGAUGACCAUGGGCCAUGAUU
     ((((....((.....)).(((....))).)))).......
     '''
+
+    start = time.time()
     n = len(seq)
     OPT = np.zeros((n,n), dtype=int)
+    BACKLINKS = {}
 
     
     # let k be the length of our subsequence
@@ -36,18 +61,51 @@ def Nussinov(seq):
     # note by the "no sharp turns" condition, k > 4
     # NOTE: since we start with the shorter subintervals first, we are
     # guarenteed to have all subproblems complete by the time they are needed.
-    for k in range(5, n):
-        for i in range(1, n-k+1):
-            j = i + k
+    for k in range(5, n): # interval lengths (end - start): 5 to n-1
+        for i in range(n-k): # start positions: 0 to n-k-1
+            j = i + k # end position
             
             no_pair = OPT[i, j-1]
-            pair_at_tj = 1 + max([OPT[i, t-1] + OPT[t+1, j-1] for t in range(i, j-4) if can_pair(seq[j], seq[t])])
 
-            OPT[i,j] = max(no_pair, pair_at_tj)
+            pair_at_tj = -1
+            tval = -1
+
+            for t in range(i, j-4):
+                next_val = 1 + OPT[i, t-1] + OPT[t+1, j-1]
+                if can_pair(seq[j], seq[t]) and next_val > pair_at_tj:
+                    pair_at_tj = next_val
+                    tval = t
+
+            if pair_at_tj > no_pair:
+                BACKLINKS[(i,j)] = [(i, tval-1), (tval+1, j-1)]
+                OPT[i, j] = pair_at_tj
+            else:
+                BACKLINKS[(i,j)] = [(i,j-1)]
+                OPT[i,j] = no_pair
+
     
     # NOTE: run traceback algorithm and set pairs[t] = '(' and pairs[j] = ')' when necessary
-    pairings = traceback(OPT, 0, n-1)
-    return [pairings, OPT]
+    pattern = ['.']*n
+
+    Nussinov_runtime = time.time() - start
+
+    trace_start = time.time()
+    traceback(OPT, BACKLINKS, (0, n-1), pattern)
+    trace_runtime = time.time() - trace_start
+
+    if output:
+        print(next_seq)
+        print(pattern)
+        num_pairs = pattern.count(')')
+        runtime = trace_runtime + Nussinov_runtime
+        print("Length = ", n, ", Pairs = ", num_pairs, ", Time = ", runtime, " sec")
+        if n < 25:
+            print_opt(OPT)
+        print("")
+
+
+
+    return [''.join(pattern), OPT, Nussinov_runtime, trace_runtime]
 
 
 def can_pair(base1, base2):
@@ -64,39 +122,36 @@ def print_opt(OPT):
 def random_seq(n):
     return "".join(np.random.choice(['A', 'G', 'C', 'U'], size=n))
 
-def traceback(OPT, i, j):
-    if i < 0 or j < i:
-        return ""
-    elif OPT[i, j] == OPT[i, j-1]:
-        return traceback(OPT, i, j-1) + '.'
-    else:
-        for t in range(i, j-4):
-            if OPT[i, j] == 1 + OPT[i, t-1] + OPT[t + 1, j-1]:
-                return traceback(OPT, i, t-1) + "(" + traceback(OPT,t+1, j-1) + ")"
+def traceback(OPT, BACKLINKS, pos, pattern):
+    i = pos[0]
+    j = pos[1]
+    try:
+        if len(BACKLINKS[pos]) == 1:
+            return traceback2(OPT, BACKLINKS, (i, j-1), pattern)
+        else:
+            t = BACKLINKS[pos][0][1] + 1
+            pattern[t] = "("
+            pattern[j] = ")"
+            traceback(OPT, BACKLINKS, BACKLINKS[pos][0], pattern)
+            traceback(OPT, BACKLINKS, BACKLINKS[pos][1], pattern)
+    except:
+        pass
+
+
 
 
 # =============================================
 
 # NOTE MAIN PROGRAM
+if RUN_RANDOM_TEST_CASES:
+    #print("N, full runtime, Nussinov runtime, traceback runtime")
 
-next_seq =input("Next sequence (Q to quit): ").upper()
-while 'Q' not in next_seq:
-    
-    print(next_seq)
-
-    start = time.time()
-    [pairings, OPT] = Nussinov(next_seq)
-    
-    runtime = time.time() - start
-    n = len(next_seq)
-    num_pairs = pairings.count(')')
-
-    print(pairings)
-    print("Length = ", n, ", Pairs = ", num_pairs, ", Time = ", runtime, " sec")
-    
-    if n < 25:
-        print_opt(OPT)
-
-    print("")
-
-    next_seq = input("Next sequence (Q to quit): ").upper()
+    for size in TEST_SIZES:
+        for _ in range(NUM_TRIALS):
+            [pattern, OPT, Nussinov_runtime, trace_runtime] = Nussinov(random_seq(size), output=False)
+            print(size, ", ", Nussinov_runtime + trace_runtime, ", ", Nussinov_runtime, ", ", trace_runtime)
+else:
+    next_seq =input("Next sequence (Q to quit): ").upper()
+    while 'Q' not in next_seq:
+        Nussinov(next_seq)
+        next_seq = input("Next sequence (Q to quit): ").upper()
