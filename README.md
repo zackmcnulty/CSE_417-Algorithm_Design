@@ -37,6 +37,27 @@
 ##### Lect 7: Divide and Conquer
 - Merge Sort review
 - Closest Pair of Points algorithm
+- Recurrence relations + Solving them
+
+
+##### Lect 8: Dynamic Programming
+- coin example: making change
+
+##### Lect 9: Dynamic Programming II
+- Weighted Interval Scheduling
+- Knapsack Problem (Subset sum)
+
+##### Lect 10: Dynamic Programming III in Biology
+- RNA folding
+- Seqeunce Matching
+- RNA secondary Structure (Nussinov's Algorithm)
+
+##### Lect 11: Sequence Alignment
+- Dynamic programming algorithm for optimal sequence alignments
+
+##### Lect 12: NP-Completeness
+- Polynomial time algorithms
+- Problem Reduction
 
 
 ### Homework Topics
@@ -57,3 +78,15 @@
 ##### HW4
 - Closest Point Algorithm
 
+##### HW5
+- MIDTERM REVIEW
+- Divide and Conquer algorithms
+- Huffman code again
+
+##### HW6
+- Dynamic Programming
+- Subset Sum Problem
+
+##### HW7
+- Dynamic Programming
+- Nussinov Algorithm (RNA secondary structure prediction)
