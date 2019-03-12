@@ -15,21 +15,22 @@ corresponds to a column with j = 0 at the far left and j = n-1
 at the far right. This places the optimal value of the full
 sequence in the upper right corner of the OPT table.
 
-
+The main method is at the bottom of this file
 
 '''
 # run random test cases or not
 # must be False to run tests from standard in
-RUN_RANDOM_TEST_CASES = True
+RUN_RANDOM_TEST_CASES = False
 
-# number of test cases of each size to run
+# For random test cases:  number of test cases of each size to run 
 NUM_TRIALS = 3
 
-# sizes of test cases to run
-TEST_SIZES = list(range(1020, 2020, 20))
+# For random test cases: sizes of test cases to run
+TEST_SIZES = list(range(100, 1000, 100))
 
 import numpy as np
 import time
+import sys
 
 
 
@@ -94,12 +95,12 @@ def Nussinov(seq, output=True):
     trace_runtime = time.time() - trace_start
 
     if output:
-        print(next_seq)
-        print(pattern)
+        print(seq)
+        print(''.join(pattern))
         num_pairs = pattern.count(')')
         runtime = trace_runtime + Nussinov_runtime
         print("Length = ", n, ", Pairs = ", num_pairs, ", Time = ", runtime, " sec")
-        if n < 25:
+        if n <= 25:
             print_opt(OPT)
         print("")
 
@@ -116,7 +117,7 @@ def print_opt(OPT):
         for num in row:
             print('{:>5}'.format(str(num)), end='')
 
-        print('\n')
+        print('')
 
 
 def random_seq(n):
@@ -125,17 +126,16 @@ def random_seq(n):
 def traceback(OPT, BACKLINKS, pos, pattern):
     i = pos[0]
     j = pos[1]
-    try:
-        if len(BACKLINKS[pos]) == 1:
-            return traceback2(OPT, BACKLINKS, (i, j-1), pattern)
-        else:
-            t = BACKLINKS[pos][0][1] + 1
-            pattern[t] = "("
-            pattern[j] = ")"
-            traceback(OPT, BACKLINKS, BACKLINKS[pos][0], pattern)
-            traceback(OPT, BACKLINKS, BACKLINKS[pos][1], pattern)
-    except:
-        pass
+    if not pos in BACKLINKS:
+        return ""
+    elif len(BACKLINKS[pos]) == 1:
+        return traceback(OPT, BACKLINKS, (i, j-1), pattern)
+    else:
+        t = BACKLINKS[pos][0][1] + 1
+        pattern[t] = "("
+        pattern[j] = ")"
+        traceback(OPT, BACKLINKS, BACKLINKS[pos][0], pattern)
+        traceback(OPT, BACKLINKS, BACKLINKS[pos][1], pattern)
 
 
 
@@ -144,14 +144,15 @@ def traceback(OPT, BACKLINKS, pos, pattern):
 
 # NOTE MAIN PROGRAM
 if RUN_RANDOM_TEST_CASES:
-    #print("N, full runtime, Nussinov runtime, traceback runtime")
+#    print("N, full runtime, Nussinov runtime, traceback runtime")
 
     for size in TEST_SIZES:
         for _ in range(NUM_TRIALS):
-            [pattern, OPT, Nussinov_runtime, trace_runtime] = Nussinov(random_seq(size), output=False)
-            print(size, ", ", Nussinov_runtime + trace_runtime, ", ", Nussinov_runtime, ", ", trace_runtime)
+            [pattern, OPT, Nussinov_runtime, trace_runtime] = Nussinov(random_seq(size), output=True)
+            #print(size, ", ", Nussinov_runtime + trace_runtime, ", ", Nussinov_runtime, ", ", trace_runtime)
 else:
-    next_seq =input("Next sequence (Q to quit): ").upper()
-    while 'Q' not in next_seq:
+    for line in sys.stdin:
+        next_seq = line.strip()
         Nussinov(next_seq)
-        next_seq = input("Next sequence (Q to quit): ").upper()
+
+

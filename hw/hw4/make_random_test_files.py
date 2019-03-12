@@ -3,8 +3,11 @@ import sys
 import numpy as np
 import time
 
+''' Generates random collection of points both uniformly within the given x range and y range
+and uniformly along a line at x = 0 within the given y range
 
-
+usage: python3 make_random_test_files.py number_points number_tests x_min x_max y_min y_max
+'''
 
 try:
     # number of points
@@ -19,7 +22,7 @@ try:
     y_max  = int(sys.argv[6])
     
 except:
-    raise ValueError("give me a number of points, x range, and y range loser")
+    raise ValueError("usage: python3 make_random_test_files.py number_points number_tests x_min x_max y_min y_max")
 
 
 x_range = x_max - x_min
@@ -47,11 +50,11 @@ for i in range(tests):
    
 
     # edge case: straight line of opens
-#    f = open(filename + "LINE" + str(num_points) + ".txt", 'w')
-#    y_coordinates = np.random.uniform(low=y_min, high=y_max, size = num_points)
-#    for y in y_coordinates:
-#        f.write("0 " + str(y) + " ")
-#    f.close()
+    f = open(filename + "LINE" + str(num_points) + ".txt", 'w')
+    y_coordinates = np.random.uniform(low=y_min, high=y_max, size = num_points)
+    for y in y_coordinates:
+        f.write("0 " + str(y) + " ")
+    f.close()
 
 
 
