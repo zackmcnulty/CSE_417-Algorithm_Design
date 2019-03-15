@@ -1,4 +1,5 @@
-# CSE_417
+#
+CSE_417
 
 
 ### Lecture Topics
@@ -90,3 +91,7 @@
 ##### HW7
 - Dynamic Programming
 - Nussinov Algorithm (RNA secondary structure prediction)
+
+##### HW8
+- NP completeness
+- Exponential Algorithms
